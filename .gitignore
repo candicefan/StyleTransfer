@@ -1,1 +1,5 @@
 neural/imagenet-vgg-verydeep-19.mat
+neural-style-torch/models/VGG_ILSVRC_19_layers_deploy.prototxt
+neural-style-torch/models/VGG_ILSVRC_19_layers_deploy.prototxt.lua
+neural-style-torch/models/VGG_ILSVRC_19_layers.caffemodel
+neural-style-torch/models/vgg_normalised.caffemodel

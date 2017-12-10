@@ -253,7 +253,7 @@ def gaussian_mask(row, column):
     IMAGE_WIDTH=a.shape[1]
     center_x=(IMAGE_WIDTH-1)/2
     center_y=(IMAGE_HEIGHT-1)/2
-    R = np.sqrt(center_x**2 + center_y**2)/5
+    R = np.sqrt(center_x**2 + center_y**2)/2
     mask_x = matlib.repmat(center_x, IMAGE_HEIGHT, IMAGE_WIDTH)
     mask_y = matlib.repmat(center_y, IMAGE_HEIGHT, IMAGE_WIDTH)
     x1 = np.arange(IMAGE_WIDTH)

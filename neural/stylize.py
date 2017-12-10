@@ -17,6 +17,7 @@ try:
 except NameError:
     from functools import reduce
 
+FILTER = {0:(0,0), 1:(0,1), 2:(0,2), 3:(1,0), 4:(1,1), 5:(1,2), 6:(2,0), 7:(2,1), 8:(2,2)}
 
 def stylize(network, initial, initial_noiseblend, content, styles, preserve_colors, iterations,
         content_weight, content_weight_blend, style_weight, style_layer_weight_exp, style_blend_weights, tv_weight,
@@ -32,6 +33,7 @@ def stylize(network, initial, initial_noiseblend, content, styles, preserve_colo
     :rtype: iterator[tuple[int|None,image]]
     """
     shape = (1,) + content.shape
+
     style_shapes = [(1,) + style.shape for style in styles]
     content_features = {}
     style_features = [{} for _ in styles]
@@ -95,11 +97,34 @@ def stylize(network, initial, initial_noiseblend, content, styles, preserve_colo
 
         content_loss = 0
         content_losses = []
+
+        feature_loss = 0
+        feature_losses = []
+
         for content_layer in CONTENT_LAYERS:
+
+            s=net[content_layer].get_shape().as_list()
+            mask=np.zeros(net[content_layer].shape)
+
+            part=4
+            feature_weight = 0.8
+            row, col = FILTER[part]
+
+            row_square=s[1]//3
+            col_square=s[2]//3
+
+            mask[:,row_square*row:row_square*(row+1),col_square*col:col_square*(col+1),:]=1
+
             content_losses.append(content_layers_weights[content_layer] * content_weight * (2 * tf.nn.l2_loss(
                     net[content_layer] - content_features[content_layer]) /
                     content_features[content_layer].size))
+
+            feature_losses.append(content_layers_weights[content_layer] * feature_weight * (2 * tf.nn.l2_loss((
+                    net[content_layer] - content_features[content_layer]) * mask) /
+                    (row_square * col_square)))
+
         content_loss += reduce(tf.add, content_losses)
+        feature_loss += reduce(tf.add, feature_losses)
 
         # style loss
         style_loss = 0
@@ -124,7 +149,7 @@ def stylize(network, initial, initial_noiseblend, content, styles, preserve_colo
                 (tf.nn.l2_loss(image[:,:,1:,:] - image[:,:,:shape[2]-1,:]) /
                     tv_x_size))
         # overall loss
-        loss = content_loss + style_loss + tv_loss
+        loss = content_loss + feature_loss + style_loss + tv_loss
 
         # optimizer setup
         train_step = tf.train.AdamOptimizer(learning_rate, beta1, beta2, epsilon).minimize(loss)
@@ -156,7 +181,6 @@ def stylize(network, initial, initial_noiseblend, content, styles, preserve_colo
                     if this_loss < best_loss:
                         best_loss = this_loss
                         best = image.eval()
-
                     img_out = vgg.unprocess(best.reshape(shape[1:]), vgg_mean_pixel)
 
                     if preserve_colors and preserve_colors == True:

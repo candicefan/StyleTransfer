@@ -45,7 +45,6 @@ def net_preloaded(weights, input_image, pooling):
         elif kind == 'pool':
             current = _pool_layer(current, pooling)
         net[name] = current
-
     assert len(net) == len(VGG19_LAYERS)
     return net
 

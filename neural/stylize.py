@@ -17,9 +17,7 @@ try:
 except NameError:
     from functools import reduce
 
-FILTER = {0:(0,0), 1:(0,1), 2:(0,2), 3:(1,0), 4:(1,1), 5:(1,2), 6:(2,0), 7:(2,1), 8:(2,2)}
-
-def stylize(network, initial, initial_noiseblend, content, styles, preserve_colors, iterations,
+def stylize(network, initial, initial_noiseblend, content, styles, grid_rows, grid_columns, grid_selections=None, preserve_colors, iterations,
         content_weight, content_weight_blend, style_weight, style_layer_weight_exp, style_blend_weights, tv_weight,
         learning_rate, beta1, beta2, epsilon, pooling,
         print_iterations=None, checkpoint_iterations=None):
@@ -103,19 +101,24 @@ def stylize(network, initial, initial_noiseblend, content, styles, preserve_colo
 
         for content_layer in CONTENT_LAYERS:
 
-            s=net[content_layer].get_shape().as_list()
-            mask=np.zeros(net[content_layer].shape)
+            if grid_selections:
+                feature_weight = 0.8
+                s=net[content_layer].get_shape().as_list()
+                mask=np.zeros(net[content_layer].shape)
 
-            part=4
-            feature_weight = 0.8
-            row, col = FILTER[part]
+                grids = {}
 
-            row_square=s[1]//3
-            col_square=s[2]//3
+                for i in range(grid_columns*grid_rows):
+                    grids[i] = (i//grid_rows, i%grid_rows)
 
-            mask[:,row_square*row:row_square*(row+1),col_square*col:col_square*(col+1),:]=1
+                for part in grid_selections: 
+                    row, col = FILTER[part]
+                    row_square=s[1]//grid_rows
+                    col_square=s[2]//grid_columns
 
-            content_losses.append(content_layers_weights[content_layer] * content_weight * (2 * tf.nn.l2_loss(
+                    mask[:,row_square*row:row_square*(row+1),col_square*col:col_square*(col+1),:]=1
+
+                content_losses.append(content_layers_weights[content_layer] * content_weight * (2 * tf.nn.l2_loss(
                     net[content_layer] - content_features[content_layer]) /
                     content_features[content_layer].size))
 

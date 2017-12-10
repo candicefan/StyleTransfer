@@ -23,6 +23,8 @@ BETA1 = 0.9
 BETA2 = 0.999
 EPSILON = 1e-08
 STYLE_SCALE = 1.0
+ROWS = 3
+COLUMNS = 3
 ITERATIONS = 1000
 VGG_PATH = 'imagenet-vgg-verydeep-19.mat'
 POOLING = 'max'
@@ -39,6 +41,15 @@ def build_parser():
     parser.add_argument('--output',
             dest='output', help='output path',
             metavar='OUTPUT', required=True)
+    parser.add_argument('--rows', type=int,
+            dest='rows', help='number of rows in grid',
+            metavar='ROWS', default=ROWS)
+    parser.add_argument('--columns', type=int,
+            dest='columns', help='number of columns in grid',
+            metavar='COLUMNS', default=COLUMNS)
+    parser.add_argument('--selections',
+            dest='selections', help='one or more part in grid to preserve content',
+            metavar='SELECTIONS')
     parser.add_argument('--iterations', type=int,
             dest='iterations', help='iterations (default %(default)s)',
             metavar='ITERATIONS', default=ITERATIONS)
@@ -160,6 +171,9 @@ def main():
         initial_noiseblend=options.initial_noiseblend,
         content=content_image,
         styles=style_images,
+        grid_rows=options.rows,
+        grid_columns=options.columns,
+        grid_selections=options.selections,
         preserve_colors=options.preserve_colors,
         iterations=options.iterations,
         content_weight=options.content_weight,

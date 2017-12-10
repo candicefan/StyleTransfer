@@ -173,7 +173,6 @@ def main():
         styles=style_images,
         grid_rows=options.rows,
         grid_columns=options.columns,
-        grid_selections=options.selections,
         preserve_colors=options.preserve_colors,
         iterations=options.iterations,
         content_weight=options.content_weight,
@@ -187,6 +186,7 @@ def main():
         beta2=options.beta2,
         epsilon=options.epsilon,
         pooling=options.pooling,
+        grid_selections=options.selections,
         print_iterations=options.print_iterations,
         checkpoint_iterations=options.checkpoint_iterations
     ):

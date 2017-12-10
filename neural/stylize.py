@@ -17,10 +17,10 @@ try:
 except NameError:
     from functools import reduce
 
-def stylize(network, initial, initial_noiseblend, content, styles, grid_rows, grid_columns, grid_selections=None, preserve_colors, iterations,
+def stylize(network, initial, initial_noiseblend, content, styles, grid_rows, grid_columns, preserve_colors, iterations,
         content_weight, content_weight_blend, style_weight, style_layer_weight_exp, style_blend_weights, tv_weight,
         learning_rate, beta1, beta2, epsilon, pooling,
-        print_iterations=None, checkpoint_iterations=None):
+        grid_selections=None, print_iterations=None, checkpoint_iterations=None):
     """
     Stylize images.
 

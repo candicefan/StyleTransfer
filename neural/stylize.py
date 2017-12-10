@@ -102,6 +102,7 @@ def stylize(network, initial, initial_noiseblend, content, styles, grid_rows, gr
         for content_layer in CONTENT_LAYERS:
 
             if grid_selections:
+                print(grid_selections)
                 feature_weight = 0.8
                 s=net[content_layer].get_shape().as_list()
                 mask=np.zeros(net[content_layer].shape)

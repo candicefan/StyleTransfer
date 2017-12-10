@@ -123,7 +123,8 @@ def stylize(network, initial, initial_noiseblend, content, styles, grid_rows, gr
                     if gaussian:
                         r = int(row_square*(row+1))-int(row_square*row)
                         c = int(col_square*(col+1))-int(col_square*col)
-                        mask[:,int(row_square*row):int(row_square*(row+1)),int(col_square*col):int(col_square*(col+1)),:]=gaussian_mask(r, c)
+                        for i in range(s[3]):
+                            mask[:,int(row_square*row):int(row_square*(row+1)),int(col_square*col):int(col_square*(col+1)),i]=gaussian_mask(r, c)
                     else:
                         mask[:,int(row_square*row):int(row_square*(row+1)),int(col_square*col):int(col_square*(col+1)),:]=1
 

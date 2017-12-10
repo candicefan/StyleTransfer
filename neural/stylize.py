@@ -123,7 +123,7 @@ def stylize(network, initial, initial_noiseblend, content, styles, grid_rows, gr
                     if gaussian:
                         r = int(row_square*(row+1))-int(row_square*row)
                         c = int(col_square*(col+1))-int(col_square*col)
-                        mask[:,int(row_square*row):int(row_square*(row+1)),int(col_square*col):int(col_square*(col+1)),:]=gaussian(r, c)
+                        mask[:,int(row_square*row):int(row_square*(row+1)),int(col_square*col):int(col_square*(col+1)),:]=gaussian_mask(r, c)
                     else:
                         mask[:,int(row_square*row):int(row_square*(row+1)),int(col_square*col):int(col_square*(col+1)),:]=1
 
@@ -248,7 +248,7 @@ def gray2rgb(gray):
     rgb[:, :, 2] = rgb[:, :, 1] = rgb[:, :, 0] = gray
     return rgb
 
-def gaussian(row, column):
+def gaussian_mask(row, column):
     a = np.zeros([row, column])
 
     IMAGE_HEIGHT=a.shape[0]

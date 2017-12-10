@@ -263,5 +263,5 @@ def gaussian_mask(row, column):
     y_map = np.transpose(y_map)
     Gauss_map = np.sqrt((x_map-mask_x)**2+(y_map-mask_y)**2)
     Gauss_map = np.exp(-0.5*Gauss_map/R)
-
+    print(Gauss_map)
     return Gauss_map

@@ -123,13 +123,14 @@ def stylize(network, initial, initial_noiseblend, content, styles, grid_rows, gr
                 feature_losses.append(content_layers_weights[content_layer] * feature_weight * (2 * tf.nn.l2_loss((
                     net[content_layer] - content_features[content_layer]) * mask) /
                     (row_square * col_square)))
-                
+
             content_losses.append(content_layers_weights[content_layer] * content_weight * (2 * tf.nn.l2_loss(
                     net[content_layer] - content_features[content_layer]) /
                     content_features[content_layer].size))
 
         content_loss += reduce(tf.add, content_losses)
-        feature_loss += reduce(tf.add, feature_losses)
+        if grid_selections:
+            feature_loss += reduce(tf.add, feature_losses)
 
         # style loss
         style_loss = 0

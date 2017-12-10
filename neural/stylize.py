@@ -4,6 +4,7 @@ import vgg
 
 import tensorflow as tf
 import numpy as np
+import numpy.matlib as matlib
 
 from sys import stderr
 
@@ -103,7 +104,9 @@ def stylize(network, initial, initial_noiseblend, content, styles, grid_rows, gr
             
             if grid_selections:
 
+                gaussian = True
                 feature_weight = 0.8
+
                 s=net[content_layer].get_shape().as_list()
                 mask=np.zeros(net[content_layer].shape)
 
@@ -117,8 +120,12 @@ def stylize(network, initial, initial_noiseblend, content, styles, grid_rows, gr
                     row, col = grids[int(part)]
                     row_square=s[1]/grid_rows
                     col_square=s[2]/grid_columns
-
-                    mask[:,int(row_square*row):int(row_square*(row+1)),int(col_square*col):int(col_square*(col+1)),:]=1
+                    if gaussian:
+                        r = int(row_square*(row+1))-int(row_square*row)
+                        c = int(col_square*(col+1))-int(col_square*col)
+                        mask[:,int(row_square*row):int(row_square*(row+1)),int(col_square*col):int(col_square*(col+1)),:]=gaussian(r, c)
+                    else:
+                        mask[:,int(row_square*row):int(row_square*(row+1)),int(col_square*col):int(col_square*(col+1)),:]=1
 
                 feature_losses.append(content_layers_weights[content_layer] * feature_weight * (2 * tf.nn.l2_loss((
                     net[content_layer] - content_features[content_layer]) * mask) /
@@ -240,3 +247,23 @@ def gray2rgb(gray):
     rgb = np.empty((w, h, 3), dtype=np.float32)
     rgb[:, :, 2] = rgb[:, :, 1] = rgb[:, :, 0] = gray
     return rgb
+
+def gaussian(row, column):
+    a = np.zeros([row, column])
+
+    IMAGE_HEIGHT=a.shape[0]
+    IMAGE_WIDTH=a.shape[1]
+    center_x=(IMAGE_WIDTH-1)/2
+    center_y=(IMAGE_HEIGHT-1)/2
+    R = np.sqrt(center_x**2 + center_y**2)
+    mask_x = matlib.repmat(center_x, IMAGE_HEIGHT, IMAGE_WIDTH)
+    mask_y = matlib.repmat(center_y, IMAGE_HEIGHT, IMAGE_WIDTH)
+    x1 = np.arange(IMAGE_WIDTH)
+    x_map = matlib.repmat(x1, IMAGE_HEIGHT, 1)
+    y1 = np.arange(IMAGE_HEIGHT)
+    y_map = matlib.repmat(y1, IMAGE_WIDTH, 1)
+    y_map = np.transpose(y_map)
+    Gauss_map = np.sqrt((x_map-mask_x)**2+(y_map-mask_y)**2)
+    Gauss_map = np.exp(-0.5*Gauss_map/R)
+
+    return Gauss_map

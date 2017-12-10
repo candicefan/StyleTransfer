@@ -18,7 +18,7 @@ try:
 except NameError:
     from functools import reduce
 
-def stylize(network, initial, initial_noiseblend, content, styles, grid_rows, grid_columns, preserve_colors, iterations,
+def stylize(network, initial, initial_noiseblend, content, styles, grid_rows, grid_columns, grid_weight, gaussian, preserve_colors, iterations,
         content_weight, content_weight_blend, style_weight, style_layer_weight_exp, style_blend_weights, tv_weight,
         learning_rate, beta1, beta2, epsilon, pooling,
         grid_selections=None, print_iterations=None, checkpoint_iterations=None):
@@ -104,9 +104,6 @@ def stylize(network, initial, initial_noiseblend, content, styles, grid_rows, gr
             
             if grid_selections:
 
-                gaussian = True
-                feature_weight = 0.8
-
                 s=net[content_layer].get_shape().as_list()
                 mask=np.zeros(net[content_layer].shape)
 
@@ -128,7 +125,7 @@ def stylize(network, initial, initial_noiseblend, content, styles, grid_rows, gr
                     else:
                         mask[:,int(row_square*row):int(row_square*(row+1)),int(col_square*col):int(col_square*(col+1)),:]=1
 
-                feature_losses.append(content_layers_weights[content_layer] * feature_weight * (2 * tf.nn.l2_loss((
+                feature_losses.append(content_layers_weights[content_layer] * grid_weight * (2 * tf.nn.l2_loss((
                     net[content_layer] - content_features[content_layer]) * mask) /
                     (row_square * col_square * s[3] * len(grid_selections))))
 

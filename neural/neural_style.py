@@ -25,7 +25,8 @@ EPSILON = 1e-08
 STYLE_SCALE = 1.0
 ROWS = 3
 COLUMNS = 3
-ITERATIONS = 1000
+SELECTION_WEIGHT = 2
+ITERATIONS = 2500
 VGG_PATH = 'imagenet-vgg-verydeep-19.mat'
 POOLING = 'max'
 
@@ -50,6 +51,9 @@ def build_parser():
     parser.add_argument('--selections',
             nargs='+', dest='selections', help='one or more part in grid to preserve content',
             metavar='SELECTIONS')
+    parser.add_argument('--selection-weight', type=float,
+            dest='selection_weight',
+            metavar='SELECTION_WEIGHT', default=SELECTION_WEIGHT)
     parser.add_argument('--iterations', type=int,
             dest='iterations', help='iterations (default %(default)s)',
             metavar='ITERATIONS', default=ITERATIONS)
@@ -108,6 +112,8 @@ def build_parser():
     parser.add_argument('--initial-noiseblend', type=float,
             dest='initial_noiseblend', help='ratio of blending initial image with normalized noise (if no initial image specified, content image is used) (default %(default)s)',
             metavar='INITIAL_NOISEBLEND')
+    parser.add_argument('--gaussian', action='store_true',
+            dest='gaussian')
     parser.add_argument('--preserve-colors', action='store_true',
             dest='preserve_colors', help='style-only transfer (preserving colors) - if color transfer is not needed')
     parser.add_argument('--pooling',
@@ -173,6 +179,8 @@ def main():
         styles=style_images,
         grid_rows=options.rows,
         grid_columns=options.columns,
+        grid_weight=options.selection_weight,
+        gaussian=options.gaussian,
         preserve_colors=options.preserve_colors,
         iterations=options.iterations,
         content_weight=options.content_weight,

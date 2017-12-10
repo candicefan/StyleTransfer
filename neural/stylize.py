@@ -100,8 +100,9 @@ def stylize(network, initial, initial_noiseblend, content, styles, grid_rows, gr
         feature_losses = []
 
         for content_layer in CONTENT_LAYERS:
-
+            
             if grid_selections:
+
                 feature_weight = 0.8
                 s=net[content_layer].get_shape().as_list()
                 mask=np.zeros(net[content_layer].shape)
@@ -112,20 +113,20 @@ def stylize(network, initial, initial_noiseblend, content, styles, grid_rows, gr
                     grids[i] = (i//grid_rows, i%grid_rows)
 
                 for part in grid_selections: 
-                    
+
                     row, col = grids[int(part)]
                     row_square=s[1]/grid_rows
                     col_square=s[2]/grid_columns
 
                     mask[:,int(row_square*row):int(row_square*(row+1)),int(col_square*col):int(col_square*(col+1)),:]=1
 
-                content_losses.append(content_layers_weights[content_layer] * content_weight * (2 * tf.nn.l2_loss(
-                    net[content_layer] - content_features[content_layer]) /
-                    content_features[content_layer].size))
-
-            feature_losses.append(content_layers_weights[content_layer] * feature_weight * (2 * tf.nn.l2_loss((
+                feature_losses.append(content_layers_weights[content_layer] * feature_weight * (2 * tf.nn.l2_loss((
                     net[content_layer] - content_features[content_layer]) * mask) /
                     (row_square * col_square)))
+                
+            content_losses.append(content_layers_weights[content_layer] * content_weight * (2 * tf.nn.l2_loss(
+                    net[content_layer] - content_features[content_layer]) /
+                    content_features[content_layer].size))
 
         content_loss += reduce(tf.add, content_losses)
         feature_loss += reduce(tf.add, feature_losses)

@@ -48,7 +48,7 @@ def build_parser():
             dest='columns', help='number of columns in grid',
             metavar='COLUMNS', default=COLUMNS)
     parser.add_argument('--selections',
-            dest='selections', help='one or more part in grid to preserve content',
+            nargs='+', dest='selections', help='one or more part in grid to preserve content',
             metavar='SELECTIONS')
     parser.add_argument('--iterations', type=int,
             dest='iterations', help='iterations (default %(default)s)',

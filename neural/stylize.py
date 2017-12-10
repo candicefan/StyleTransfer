@@ -110,7 +110,7 @@ def stylize(network, initial, initial_noiseblend, content, styles, grid_rows, gr
                 grids = {}
 
                 for i in range(grid_columns*grid_rows):
-                    grids[i] = (i//grid_rows, i%grid_rows)
+                    grids[i] = (i//grid_columns, i%grid_columns)
 
                 for part in grid_selections: 
 

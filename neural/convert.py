@@ -14,9 +14,9 @@ def gray2rgb(gray):
     return rgb
 
 def convert(style):
-	yuv = np.array(Image.fromarray(style.astype(np.uint8)).convert('YCbCr'))
-	result = yuv[..., 0]
-	return result
+	grayscale = rgb2gray(style)
+	rgb = gray2rgb(grayscale)
+	return rgb
 
 def convert2color(image, color):
 

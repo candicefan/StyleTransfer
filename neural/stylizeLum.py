@@ -36,6 +36,7 @@ def stylize(network, initial, initial_noiseblend, content, styles, grid_rows, gr
     content = convert(content)
 
     shape = (1,) + content.shape
+    print('--', shape)
 
     style_shapes = [(1,) + style.shape for style in styles]
     content_features = {}
